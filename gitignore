@@ -1,0 +1,30 @@
+# Keys & credentials — never commit these
+*.pem
+*.key
+*.crt
+*.p12
+.env
+.env.*
+credentials*
+*.secret
+
+# AWS
+.aws/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
