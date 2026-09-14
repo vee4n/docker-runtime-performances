@@ -1,0 +1,17 @@
+FROM alpine:3.19 AS base
+WORKDIR /app
+RUN apk add --no-cache npm
+COPY package*.json ./
+
+FROM base AS deps
+RUN npm install --only=production
+
+FROM alpine:3.19 AS production
+RUN apk add --no-cache nodejs
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+EXPOSE 3000
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+CMD ["node", "index.js"]

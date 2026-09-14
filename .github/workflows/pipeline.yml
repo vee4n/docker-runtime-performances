@@ -1,0 +1,42 @@
+# .github/workflows/pipeline.yml
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: node-single
+            dockerfile: dockerfiles/Dockerfile.node-single
+          - name: node-alpine-multi
+            dockerfile: dockerfiles/Dockerfile.node-alpine-multi
+          - name: alpine-multi
+            dockerfile: dockerfiles/Dockerfile.alpine-multi
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Record build start
+        run: echo "BUILD_START=$(date +%s%3N)" >> $GITHUB_ENV
+
+      - name: Build image
+        run: |
+          docker build \
+            -f ${{ matrix.dockerfile }} \
+            -t your-registry/${{ matrix.name }}:latest \
+            --no-cache \
+            ./app/express-app
+
+      - name: Record build end
+        run: |
+          END=$(date +%s%3N)
+          echo "Build duration: $((END - BUILD_START))ms"
+
+      - name: Push to registry
+        run: docker push your-registry/${{ matrix.name }}:latest
